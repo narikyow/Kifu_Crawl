@@ -19,7 +19,7 @@ class Crawler:
 
         self.options.add_argument("--headless")
         
-        self.options.binary_location = "C:/Users/享市/AppData/Local/Google/Chrome/Application/chrome.exe"
+        self.options.binary_location = "chrome.exeまでのフルパス"
         
         self.read()
 
@@ -32,9 +32,11 @@ class Crawler:
 
     def get_kif(self,num):
         
-        self.driver = webdriver.Chrome(chrome_options=self.options, executable_path="driver/chromedriver.exe")
+        self.driver = webdriver.Chrome(chrome_options=self.options, executable_path="driver/chromedriver.exe")#chromeドライバまでの相対パス
+        
         
         i = num
+        
         if "https:" in self.kif_url_list[i].split("/"):
 
             self.driver.get(self.kif_url_list[i])
@@ -53,7 +55,7 @@ class Crawler:
 
                 kif_text=kif_elem.find_element_by_tag_name("textarea").text
                 
-                with open("".join(["Kif_DB_Files/",str(i+1),".kif"]),mode="w")as f:
+                with open("".join(["Kif_DB_Files/",str(i+1),".kif"]),mode="w")as f:#ファイル名 変更可能
                     f.write(kif_text)
                     # print(kif_text)
                     print("".join([str(i+1)," / ",str(self.counter)," Finished"]))
@@ -63,11 +65,10 @@ class Crawler:
 def multi_Main(count,address,battle_form):
     future_list=[]
     with futures.ThreadPoolExecutor(max_workers=16) as executor:
-        #for i in range(count):
-            #send_list=[i,address,battle_form]
+        #max_workers=使用スレッド数 調節して使う
+
         future=[executor.submit(multi_sub,[i,address,battle_form]) for i in range(count)]
         future_list.append(future)
-        #_=future.as_completed(fs=future_list)
 
 def multi_sub(args):
     Cr = Crawler(args[1],args[2])
